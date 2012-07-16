@@ -44,7 +44,12 @@ CapistranoHelpers.with_configuration do
         config = YAML::load_file(config_file)
         campfire = Tinder::Campfire.new(config['subdomain'], :token => config['token'])
         room = campfire.find_room_by_name(config['room'])
-        room.speak("#{someone} #{action} #{application} #{campfire_branch} to #{target}")
+        log = fetch(:full_log)
+        if log.include?('Rolling back')
+          room.speak("Warning: #{someone} failed to deploy #{application} #{branch} to #{target}!")
+        else
+          room.speak("#{someone} finished deploying #{application} #{branch} to #{target}")
+        end
       end
     end
   end
